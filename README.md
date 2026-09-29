@@ -1,0 +1,94 @@
+# Hemmet
+
+En delad hemapp (PWA) för två personer: kalender, listor med bilder, anteckningar, utgifter och en Idag-sida med väder från SMHI. Allt synkas i realtid via Supabase.
+
+Appen är ren HTML, CSS och JavaScript (ES-moduler) utan byggsteg. Mappen kan läggas direkt på GitHub Pages, Netlify eller Cloudflare Pages.
+
+## Struktur
+
+```
+index.html              Appskal, iOS-metataggar, tema sätts innan sidan ritas
+manifest.webmanifest    PWA-manifest
+sw.js                   Service worker (appskal + senast hämtade data offline)
+css/app.css             All stil, mörkt och ljust tema via CSS-variabler
+icons/                  App-ikoner (192, 512, apple-touch-icon 180)
+js/config.js            DINA Supabase-uppgifter (fyll i själv)
+js/app.js               Start, inloggningsflöde, router och flikrad
+js/auth.js              Inloggning, registrering, skapa/gå med i hushåll
+js/realtime.js          Supabase Realtime för alla tabeller
+js/ui.js                Hjälpfunktioner: DOM, ikoner, blad, format, felmeddelanden
+js/theme.js             Temaval (Mörk / Ljus / Följ systemet)
+js/idag.js              Flik: Idag
+js/kalender.js          Flik: Kalender
+js/listor.js            Flik: Listor
+js/anteckningar.js      Flik: Anteckningar
+js/utgifter.js          Flik: Utgifter
+js/installningar.js     Inställningar (kugghjulet på Idag)
+schema.sql              Databasschemat (redan kört i Supabase)
+```
+
+## Kom igång
+
+### 1. Supabase
+
+1. Databasen skapas med `schema.sql` (SQL Editor > New query > Run). Kör den bara en gång.
+2. Öppna **Project Settings > API** och kopiera **Project URL** och den **publika nyckeln** (`sb_publishable_…` eller den äldre `anon`-nyckeln).
+3. Klistra in dem i `js/config.js`:
+
+   ```js
+   export const SUPABASE_URL = 'https://abcdefgh.supabase.co';
+   export const SUPABASE_KEY = 'sb_publishable_...';
+   ```
+
+   Använd **aldrig** `service_role`- eller `sb_secret_`-nycklar i appen. Appen vägrar starta om den upptäcker en sådan.
+
+4. **Authentication > URL Configuration**: sätt **Site URL** till adressen där appen ligger (t.ex. `https://dittnamn.github.io/hemmet/`) och lägg till samma adress plus `http://localhost:5511/` under **Redirect URLs**. Det är dit bekräftelselänken i registreringsmejlet leder.
+   Vill ni slippa bekräfta e-post kan ni stänga av **Confirm email** under Authentication > Providers > Email.
+
+### 2. Kör lokalt
+
+Kräver Node.js (för `npx`). Stå i projektmappen och kör:
+
+```bash
+npx serve -l 5511 .
+```
+
+Öppna sedan <http://localhost:5511>. Service workern fungerar på `localhost` utan https.
+
+Alternativ utan Node: `python -m http.server 5511`.
+
+### 3. Skapa hushållet
+
+1. Den ena av er registrerar sig och väljer **Skapa hushåll**.
+2. Öppna **Inställningar** (kugghjulet uppe till höger på Idag) och kopiera inbjudningskoden.
+3. Den andra registrerar sig, väljer **Gå med med kod** och skriver in koden.
+
+## Lägg ut på GitHub Pages
+
+1. Skapa ett nytt repo på GitHub, t.ex. `hemmet` (det kan vara privat om du har GitHub Pro, annars publikt; nyckeln i `config.js` är publik och datan skyddas av RLS).
+2. Pusha mappen:
+
+   ```bash
+   git remote add origin https://github.com/DITTNAMN/hemmet.git
+   git push -u origin main
+   ```
+
+3. På GitHub: **Settings > Pages > Build and deployment > Source: Deploy from a branch**, välj `main` och `/ (root)`, klicka **Save**.
+4. Efter någon minut ligger appen på `https://DITTNAMN.github.io/hemmet/`. Alla sökvägar är relativa, så undermappen fungerar.
+5. Lägg in den adressen i Supabase under **Authentication > URL Configuration** (se ovan).
+
+Netlify och Cloudflare Pages fungerar likadant: peka på mappen, inget byggkommando, publiceringsmapp `/`.
+
+### Uppdateringar
+
+Service workern hämtar appens filer från nätet i första hand, så en ny version syns vid nästa omladdning. Lägger du till eller tar bort en fil i appen: lägg till den i listan `SHELL` i `sw.js` och höj `VERSION`.
+
+## Lägg på iPhones hemskärm
+
+Öppna adressen i **Safari**, tryck på **Dela** och välj **Lägg till på hemskärmen**. Hemmet öppnas då som en egen app utan adressfält.
+
+## Säkerhet
+
+- All data skyddas av Row Level Security i databasen. Bara medlemmar i ett hushåll kan läsa och ändra dess data och bilder.
+- Användartext sätts alltid med `textContent`. Länkar tillåts bara med `http:` och `https:`.
+- Bilder ligger i den privata bucketen `item-images` och visas via signerade URL:er som gäller en begränsad tid.
