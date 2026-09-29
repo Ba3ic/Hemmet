@@ -223,7 +223,7 @@ function mountList(root, { navigate }, listId) {
       link ? h('a', { class: 'item-link', href: link, target: '_blank', rel: 'noopener noreferrer', attrs: { title: link } },
         icon('link'), h('span', { text: prettyHost(link) })) : null,
       it.image_path ? h('button', {
-        type: 'button', class: 'thumb', attrs: { 'aria-label': 'Visa bild för ' + it.name },
+        type: 'button', class: 'item-image' + (thumbUrl ? '' : ' loading'), attrs: { 'aria-label': 'Visa bilden för ' + it.name + ' i helskärm' },
         on: { click: () => thumbUrl ? lightbox(thumbUrl, it.name) : toast('Bilden laddas fortfarande – försök igen om en stund.') },
       }, thumbUrl ? h('img', { src: thumbUrl, alt: '', loading: 'lazy' }) : icon('image')) : null,
     );
