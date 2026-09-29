@@ -211,6 +211,7 @@ export function errorMessage(err) {
   if (/rate limit|too many requests/i.test(msg) || err?.status === 429) return 'För många försök på kort tid. Vänta en minut och försök igen.';
   if (/ogiltig kod/i.test(msg)) return 'Koden hittades inte. Kontrollera att du skrivit alla 8 tecken rätt.';
   if (/inte inloggad|jwt|not authenticated/i.test(msg)) return 'Du är utloggad. Logga in igen och försök på nytt.';
+  if (code === '42703' || /column .* does not exist/i.test(msg)) return 'Databasen saknar nya kolumner. Kör migreringen i mappen migrations/ i Supabase (SQL Editor) och ladda om sidan.';
   if (/row-level security|permission denied/i.test(msg) || code === '42501') return 'Du har inte behörighet att göra det här. Kontrollera att du är med i hushållet.';
   if (/payload too large|exceeded the maximum/i.test(msg)) return 'Filen är för stor. Välj en mindre bild.';
   return msg ? `Något gick fel: ${msg}` : 'Något gick fel. Försök igen.';

@@ -21,6 +21,8 @@
   --pos: #5bbd8a;
   --pos-soft: rgba(91, 189, 138, 0.14);
   --ev0: #4fb3a9; --ev1: #e0876a; --ev2: #a08ce0; --ev3: #d6b25e; --ev4: #5bbd8a;
+  --other: #a08ce0;
+  --income: #e7eeec;
   --backdrop: rgba(4, 8, 7, 0.62);
   --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.25);
@@ -59,6 +61,8 @@
   --pos: #2b8756;
   --pos-soft: rgba(43, 135, 86, 0.11);
   --ev0: #2a8a80; --ev1: #cf6a45; --ev2: #7a63c9; --ev3: #b58a1f; --ev4: #2f9a62;
+  --other: #7a63c9;
+  --income: #14201d;
   --backdrop: rgba(20, 32, 29, 0.38);
   --shadow: 0 18px 50px rgba(20, 40, 36, 0.18);
   --shadow-sm: 0 2px 10px rgba(20, 40, 36, 0.07);
@@ -699,6 +703,7 @@ button.row:hover, a.row:hover { background: var(--raised); }
 .split-bar .seg:only-child { border-radius: 999px; }
 .seg.fixed, .dot.fixed { background: var(--accent); }
 .seg.variable, .dot.variable { background: var(--coral); }
+.seg.other, .dot.other { background: var(--other); }
 .seg.none { width: 100%; background: transparent; }
 .legend {
   display: flex;
@@ -740,7 +745,7 @@ button.row:hover, a.row:hover { background: var(--raised); }
   margin: 24px 4px 10px;
 }
 .section-head h2 { font-size: 1.05rem; }
-.section-sum { font-weight: 700; font-size: 1.05rem; }
+.section-sum { font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
 .empty-inline { padding: 4px 4px 12px; }
 
 .expense-rows .expense {
@@ -770,6 +775,51 @@ button.row:hover, a.row:hover { background: var(--raised); }
 }
 .add-expense .input:first-child { flex: 1; min-width: 0; }
 .add-expense .amount-input { width: 110px; padding-right: 14px; }
+
+/* Utgifter: trend, sektioner och graf */
+.total-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin: 2px 0 12px; }
+.total-line .big { margin: 0; }
+.delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.8rem; font-weight: 650;
+  white-space: nowrap;
+}
+.delta .arrow { font-size: 0.7em; }
+.delta.up { color: var(--neg); background: var(--neg-soft); }
+.delta.down { color: var(--pos); background: var(--pos-soft); }
+.delta.flat { color: var(--muted); background: var(--raised); }
+.expense-section .section-head h2 { display: flex; align-items: center; }
+.expense-section .section-head h2 .dot { width: 10px; height: 10px; margin-right: 9px; vertical-align: 0; }
+.name-cell { flex: 1; min-width: 0; display: grid; }
+.name-cell .input.bare { font-weight: 550; }
+.name-cell .since { font-size: 0.72rem; padding: 0 10px; margin-top: -8px; margin-bottom: 2px; pointer-events: none; }
+
+.chart-card { padding-bottom: 12px; }
+.chart-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.chart-head h2 { font-size: 1.05rem; }
+.chart-trend { display: grid; justify-items: end; gap: 4px; }
+.chart-wrap { margin: 0 -4px; }
+.chart { display: block; overflow: visible; font-family: var(--font); }
+.chart .grid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; }
+.chart .axis { fill: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.chart .axis.x { font-size: 11px; }
+.chart .axis.x.sel { fill: var(--text); font-weight: 700; }
+.chart .band { fill: transparent; }
+.chart .band.sel { fill: var(--accent-soft); }
+.chart .bar { cursor: pointer; outline: none; }
+.chart .bar:hover .band:not(.sel) { fill: var(--raised); }
+.chart .bar:focus-visible .band { stroke: var(--accent); stroke-width: 2; }
+.chart .seg-fixed { fill: var(--accent); }
+.chart .seg-variable { fill: var(--coral); }
+.chart .seg-other { fill: var(--other); }
+.chart .seg-empty { fill: var(--line); }
+.chart .bar:not(.sel) [class^="seg-"] { opacity: 0.78; }
+.chart .income path { fill: none; stroke: var(--income); stroke-width: 2; stroke-dasharray: 5 4; stroke-linecap: round; opacity: 0.85; }
+.chart .income circle { fill: var(--surface); stroke: var(--income); stroke-width: 2; }
+.chart-legend { margin-top: 8px; }
+.line-key { display: inline-block; width: 16px; height: 0; border-top: 2px dashed var(--income); margin-right: 7px; vertical-align: 3px; }
 
 /* ---------- Listor ---------- */
 

@@ -23,11 +23,13 @@ js/kalender.js          Flik: Kalender
 js/listor.js            Flik: Listor
 js/anteckningar.js      Flik: Anteckningar
 js/utgifter.js          Flik: Utgifter
+js/utgifter-graf.js     Graf över utgifter per månad (egen SVG)
 js/installningar.js     Inställningar (kugghjulet på Idag)
 js/events.js            Händelser: hämtning och bladet för ny/redigera (Kalender + Idag)
 js/images.js            Bilder: förminskning, uppladdning, signerade URL:er
 js/weather.js           Väder från SMHI
 schema.sql              Databasschemat (redan kört i Supabase)
+migrations/             Databasändringar efter schema.sql, körs i nummerordning
 ```
 
 ## Kom igång
@@ -47,6 +49,16 @@ schema.sql              Databasschemat (redan kört i Supabase)
 
 4. **Authentication > URL Configuration**: sätt **Site URL** till adressen där appen ligger (t.ex. `https://dittnamn.github.io/hemmet/`) och lägg till samma adress plus `http://localhost:5511/` under **Redirect URLs**. Det är dit bekräftelselänken i registreringsmejlet leder.
    Vill ni slippa bekräfta e-post kan ni stänga av **Confirm email** under Authentication > Providers > Email.
+
+### Migreringar
+
+Efter `schema.sql` kör du filerna i `migrations/` i nummerordning, en gång var (SQL Editor > New query > Run):
+
+| Fil | Vad den gör |
+| --- | --- |
+| `001_utgifter.sql` | Fasta utgifter får `start_month`/`end_month` så att de bara gäller framåt, och rörliga utgifter får `category` (`rorlig` eller `ovrigt`) för sektionen "Övrigt". |
+
+Saknas en migrering visar Utgifter-fliken ett felmeddelande som säger att den behöver köras.
 
 ### 2. Kör lokalt
 
