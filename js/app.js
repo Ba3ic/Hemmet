@@ -99,7 +99,7 @@ function buildShell() {
   const tabLinks = {};
   const nav = h('nav', { class: 'tabbar', attrs: { 'aria-label': 'Flikar' } },
     h('ul', {}, TABS.map((t) => {
-      const a = h('a', { href: '#' + t.id }, icon(t.icon), h('span', { text: t.label }));
+      const a = h('a', { href: '#' + t.id }, h('span', { class: 'tab-ico' }, icon(t.icon)), h('span', { class: 'tab-label', text: t.label }));
       tabLinks[t.id] = a;
       return h('li', {}, a);
     })),
