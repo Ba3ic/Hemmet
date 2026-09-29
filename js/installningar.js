@@ -29,8 +29,8 @@ export function mount(root, { navigate }) {
   const codeEl = h('code', { text: hh.invite_code });
 
   const current = getThemePref();
-  const themes = [['dark', 'Mörk'], ['light', 'Ljus'], ['system', 'Följ systemet']];
-  const themeControl = h('div', { class: 'segmented', attrs: { role: 'radiogroup', 'aria-label': 'Tema' } },
+  const themes = [['dark', 'Mörk'], ['light', 'Ljus'], ['angelica', 'Angelica Mode'], ['system', 'Följ systemet']];
+  const themeControl = h('div', { class: 'segmented themes', attrs: { role: 'radiogroup', 'aria-label': 'Tema' } },
     themes.map(([value, label]) => h('label', {},
       h('input', { type: 'radio', name: 'theme', value, checked: value === current, on: { change: () => setThemePref(value) } }),
       h('span', { text: label }),

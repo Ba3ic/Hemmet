@@ -17,7 +17,8 @@ js/app.js               Start, inloggningsflöde, router och flikrad
 js/auth.js              Inloggning, registrering, skapa/gå med i hushåll
 js/realtime.js          Supabase Realtime för alla tabeller
 js/ui.js                Hjälpfunktioner: DOM, ikoner, blad, format, felmeddelanden
-js/theme.js             Temaval (Mörk / Ljus / Följ systemet)
+js/theme.js             Temaval (Mörk / Ljus / Angelica Mode / Följ systemet)
+js/angelica.js          Glitter och katt i Angelica Mode
 js/idag.js              Flik: Idag
 js/kalender.js          Flik: Kalender
 js/listor.js            Flik: Listor
@@ -101,6 +102,11 @@ Service workern hämtar appens filer från nätet i första hand, så en ny vers
 ## Lägg på iPhones hemskärm
 
 Öppna adressen i **Safari**, tryck på **Dela** och välj **Lägg till på hemskärmen**. Hemmet öppnas då som en egen app utan adressfält.
+
+## Teman
+
+Välj tema under Inställningar: **Mörk** (standard), **Ljus**, **Angelica Mode** eller **Följ systemet**. Valet sparas i webbläsaren.
+Angelica Mode är ett varmt, beige tema med dammrosa och guld, svagt glitter i bakgrunden och en liten katt som då och då promenerar längs flikraden. Glitter och katt stängs av helt om enheten är inställd på reducerad rörelse.
 
 ## Väder
 

@@ -14,7 +14,7 @@
       if (pref === 'system') {
         theme = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       }
-      if (theme !== 'light') theme = 'dark';
+      if (theme !== 'light' && theme !== 'angelica') theme = 'dark';
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
