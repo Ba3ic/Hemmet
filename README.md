@@ -106,7 +106,7 @@ Service workern hämtar appens filer från nätet i första hand, så en ny vers
 ## Teman
 
 Välj tema under Inställningar: **Mörk** (standard), **Ljus**, **Angelica Mode** eller **Följ systemet**. Valet sparas i webbläsaren.
-Angelica Mode är ett varmt, beige tema med dammrosa och guld, svagt glitter i bakgrunden och en liten katt som då och då promenerar längs flikraden. Glitter och katt stängs av helt om enheten är inställd på reducerad rörelse.
+Angelica Mode är ett varmt, beige tema med dammrosa och guld, svagt glitter i bakgrunden en liten katt som då och då promenerar längs flikraden och en pixelkatt som strövar runt på skärmen. Glitter och katter stängs av helt om enheten är inställd på reducerad rörelse.
 
 ## Väder
 

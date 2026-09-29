@@ -1,5 +1,5 @@
-// Angelica Mode: svagt glitter i bakgrunden och en liten katt som då och då promenerar
-// längs flikraden. Allt är dekoration: pointer-events: none, aria-hidden, och ingenting
+// Angelica Mode: svagt glitter i bakgrunden, en liten katt som då och då promenerar
+// längs flikraden och en pixelkatt som strövar runt på skärmen. Allt är dekoration: pointer-events: none, aria-hidden, och ingenting
 // skapas alls när användaren vill ha reducerad rörelse.
 
 const reduce = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
@@ -30,6 +30,7 @@ function removeAll() {
   layer?.remove();
   cat?.remove();
   layer = cat = null;
+  removePixelCat();
 }
 
 // ---------- Glitter ----------
@@ -53,6 +54,7 @@ function build() {
   }
   document.body.append(layer);
   buildCat();
+  buildPixelCat();
 }
 
 // ---------- Katten ----------
@@ -110,3 +112,208 @@ function scheduleWalk(ms) {
     cat.classList.add('strolling');
   }, ms);
 }
+
+// ---------- Pixelkatten ----------
+// Ritas från en pixelkarta (16 × 12) som små rutor med skarpa kanter.
+// o = kontur, f = päls, l = ljus päls, p = rosa, e = öga
+
+const PIXEL_FRAMES = {
+  walk1: [
+    '................',
+    '..........o...o.',
+    '.........opo.opo',
+    '..o......offfffo',
+    '.ofo.....ofefefo',
+    '.ofo.....offpffo',
+    '..ofoooooofflllo',
+    '...offffffffllo.',
+    '...offffffffffo.',
+    '...offoooooooffo',
+    '...ofo.......of.',
+    '...oo........oo.',
+  ],
+  walk2: [
+    '................',
+    '..........o...o.',
+    '.........opo.opo',
+    '.o.......offfffo',
+    'ofo......ofefefo',
+    '.ofo.....offpffo',
+    '..ofoooooofflllo',
+    '...offffffffllo.',
+    '...offffffffffo.',
+    '....offoooooffo.',
+    '....ofo.....ofo.',
+    '.....oo.....oo..',
+  ],
+  sit: [
+    '......o...o.....',
+    '.....opo.opo....',
+    '.....offfffo....',
+    '.....ofefefo....',
+    '.....offpffo....',
+    '......oflllo....',
+    '.....offlllfo...',
+    '.....offlllfo...',
+    '....offfffffo...',
+    '....offfffffo...',
+    '.oooofofffofo...',
+    '..ooooooooooo...',
+  ],
+  sleep: [
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '..........o...o.',
+    '.....ooooopo.opo',
+    '...ooffffoffffff',
+    '..offfffffoeefee',
+    '.offffffffoffpff',
+    '.ofoooooooooooo.',
+    '..oo............',
+  ],
+};
+const PX = 3;                 // skärmpixlar per kattpixel → 48 × 36 px
+const CAT_W = 16 * PX, CAT_H = 12 * PX;
+const SPEED = 42;             // px per sekund
+const AVOID = 'button, a, input, textarea, select, label, [role="button"], [role="gridcell"], .item-image';
+
+let pcat = null;
+let pTimer = null;
+let pos = { x: 0, y: 0 };
+
+function pixelSvg() {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 16 12');
+  svg.setAttribute('width', CAT_W);
+  svg.setAttribute('height', CAT_H);
+  svg.setAttribute('shape-rendering', 'crispEdges');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  for (const [name, rows] of Object.entries(PIXEL_FRAMES)) {
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'px-' + name);
+    rows.forEach((row, y) => {
+      // Rutor i samma färg bredvid varandra slås ihop till ett rect – färre element.
+      let x = 0;
+      while (x < row.length) {
+        const ch = row[x];
+        let w = 1;
+        while (row[x + w] === ch) w++;
+        if (ch !== '.') {
+          const r = document.createElementNS(NS, 'rect');
+          r.setAttribute('x', x);
+          r.setAttribute('y', y);
+          r.setAttribute('width', w);
+          r.setAttribute('height', 1);
+          r.setAttribute('class', 'c-' + ch);
+          g.append(r);
+        }
+        x += w;
+      }
+    });
+    svg.append(g);
+  }
+  return svg;
+}
+
+function buildPixelCat() {
+  if (pcat) return;
+  pcat = document.createElement('div');
+  pcat.className = 'pixel-cat sitting';
+  pcat.setAttribute('aria-hidden', 'true');
+  const zzz = document.createElement('span');
+  zzz.className = 'zzz';
+  zzz.textContent = 'z';
+  pcat.append(pixelSvg(), zzz);
+  const b = bounds();
+  pos = { x: b.x0 + Math.random() * (b.x1 - b.x0), y: b.y1 };
+  place(0);
+  document.body.append(pcat);
+  pTimer = setTimeout(nextMove, 1500);
+}
+
+function removePixelCat() {
+  clearTimeout(pTimer);
+  pTimer = null;
+  pcat?.remove();
+  pcat = null;
+}
+
+/** Området katten får röra sig i: hela skärmen utom flikraden. */
+function bounds() {
+  const tab = document.querySelector('.tabbar');
+  const bottom = tab ? tab.getBoundingClientRect().top : window.innerHeight;
+  return { x0: 6, x1: Math.max(6, window.innerWidth - CAT_W - 6), y0: 10, y1: Math.max(10, bottom - CAT_H - 4) };
+}
+
+const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+
+/** Välj ett mål. På bred skärm håller katten sig oftast i marginalerna bredvid innehållet. */
+function pickTarget() {
+  const b = bounds();
+  const side = (window.innerWidth - 740) / 2;
+  let x;
+  if (side > CAT_W + 20 && Math.random() < 0.75) {
+    x = Math.random() < 0.5
+      ? 6 + Math.random() * (side - CAT_W - 12)
+      : window.innerWidth - side + 6 + Math.random() * (side - CAT_W - 12);
+  } else {
+    // Inte för långa promenader – högst ungefär halva skärmen åt gången.
+    const maxStep = Math.max(160, window.innerWidth / 2);
+    x = pos.x + (Math.random() * 2 - 1) * maxStep;
+  }
+  const y = b.y0 + Math.random() * (b.y1 - b.y0);
+  return { x: clamp(x, b.x0, b.x1), y: clamp(y, b.y0, b.y1) };
+}
+
+/** Ligger platsen ovanpå något man kan trycka på? Katten själv har pointer-events: none och räknas inte. */
+function overInteractive({ x, y }) {
+  const pts = [[x + 6, y + 6], [x + CAT_W - 6, y + 6], [x + 6, y + CAT_H - 4], [x + CAT_W - 6, y + CAT_H - 4], [x + CAT_W / 2, y + CAT_H / 2]];
+  return pts.some(([px, py]) => document.elementFromPoint(px, py)?.closest(AVOID));
+}
+
+function place(ms) {
+  pcat.style.transitionDuration = `${ms}ms`;
+  pcat.style.transform = `translate3d(${Math.round(pos.x)}px, ${Math.round(pos.y)}px, 0)`;
+}
+
+function nextMove() {
+  if (!pcat) return;
+  if (document.visibilityState !== 'visible') { pTimer = setTimeout(nextMove, 5000); return; }
+  const target = pickTarget();
+  const dist = Math.hypot(target.x - pos.x, target.y - pos.y);
+  const ms = Math.max(600, (dist / SPEED) * 1000);
+  pcat.classList.toggle('left', target.x < pos.x);
+  pcat.classList.remove('sitting', 'sleeping');
+  pcat.classList.add('walking');
+  pos = target;
+  place(ms);
+  pTimer = setTimeout(arrive, ms);
+}
+
+function arrive() {
+  if (!pcat) return;
+  // Vila bara där den inte skymmer knappar, länkar eller fält – annars går den vidare direkt.
+  const r = Math.random();
+  if (r < 0.25 || overInteractive(pos)) { pTimer = setTimeout(nextMove, 50); return; }
+  pcat.classList.remove('walking');
+  if (r < 0.8) {
+    pcat.classList.add('sitting');
+    pTimer = setTimeout(nextMove, 3000 + Math.random() * 5000);
+  } else {
+    pcat.classList.add('sleeping');
+    pTimer = setTimeout(nextMove, 9000 + Math.random() * 9000);
+  }
+}
+
+// Håll katten inom skärmen när fönstret ändrar storlek.
+window.addEventListener('resize', () => {
+  if (!pcat) return;
+  const b = bounds();
+  pos = { x: clamp(pos.x, b.x0, b.x1), y: clamp(pos.y, b.y0, b.y1) };
+  place(0);
+});

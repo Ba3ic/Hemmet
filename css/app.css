@@ -1476,6 +1476,47 @@ button.row:hover, a.row:hover { background: var(--raised); }
 @keyframes leg-swing { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
 @keyframes tail-sway { from { transform: rotate(-6deg); } to { transform: rotate(8deg); } }
 
+/* Pixelkatten: strövar runt på skärmen, tar aldrig emot klick */
+.pixel-cat {
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 19;               /* under flikraden och alla blad/dialoger */
+  width: 48px; height: 36px;
+  pointer-events: none;
+  transition-property: transform;
+  transition-timing-function: linear;
+  will-change: transform;
+  filter: drop-shadow(0 2px 0 rgba(90, 60, 50, 0.18));
+}
+.pixel-cat svg { display: block; image-rendering: pixelated; }
+.pixel-cat.left svg { transform: scaleX(-1); }
+.pixel-cat .c-o { fill: #4a3638; }
+.pixel-cat .c-f { fill: #c9a58f; }
+.pixel-cat .c-l { fill: #f3e2d2; }
+.pixel-cat .c-p { fill: #e8a7b5; }
+.pixel-cat .c-e { fill: #3a2a2c; }
+.pixel-cat g { display: none; }
+.pixel-cat.walking .px-walk1 { display: inline; animation: px-step-a 0.36s steps(1) infinite; }
+.pixel-cat.walking .px-walk2 { display: inline; animation: px-step-b 0.36s steps(1) infinite; }
+.pixel-cat.sitting .px-sit { display: inline; }
+.pixel-cat.sleeping .px-sleep { display: inline; }
+@keyframes px-step-a { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes px-step-b { 0% { opacity: 0; } 50% { opacity: 1; } }
+.pixel-cat .zzz {
+  position: absolute;
+  right: 2px; top: 2px;
+  display: none;
+  font: 700 11px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: #974760;
+}
+.pixel-cat.left .zzz { right: auto; left: 2px; }
+.pixel-cat.sleeping .zzz { display: block; animation: zzz-float 2.4s ease-out infinite; }
+@keyframes zzz-float {
+  0% { opacity: 0; transform: translate(0, 6px) scale(0.8); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(6px, -12px) scale(1.2); }
+}
+
 /* Temavalet: fyra alternativ, två per rad på smal skärm */
 .segmented.themes { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); }
 @media (max-width: 480px) { .segmented.themes { grid-template-columns: repeat(2, 1fr); } }
@@ -1484,7 +1525,7 @@ button.row:hover, a.row:hover { background: var(--raised); }
 
 @media (prefers-reduced-motion: reduce) {
   /* Glitter och katt stängs av helt */
-  .angelica-sparkles, .angelica-cat { display: none !important; }
+  .angelica-sparkles, .angelica-cat, .pixel-cat { display: none !important; }
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
