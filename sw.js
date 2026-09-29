@@ -21,6 +21,7 @@ const SHELL = [
   'js/realtime.js',
   'js/theme.js',
   'js/ui.js',
+  'js/images.js',
   'js/idag.js',
   'js/kalender.js',
   'js/listor.js',

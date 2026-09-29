@@ -1,5 +1,5 @@
 // Idag – startsida. (Byggs ut i etapp 4 med väder och händelser.)
-import { h, iconButton, fmt, capitalize } from './ui.js';
+import { h, iconButton, fmt, capitalize, add } from './ui.js';
 
 export const title = 'Idag';
 
@@ -13,7 +13,7 @@ export function greeting(d = new Date()) {
 }
 
 export function mount(root, { navigate }) {
-  root.append(
+  add(root,
     h('header', { class: 'topbar' },
       h('div', { class: 'grow' },
         h('h1', { text: greeting() }),

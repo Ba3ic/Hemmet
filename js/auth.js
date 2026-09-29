@@ -1,7 +1,7 @@
 // Inloggning, registrering och val av hushåll.
 import { sb } from './supabase.js';
 import { state } from './state.js';
-import { h, icon, clear, field, formError, showFormError, busy, errorMessage } from './ui.js';
+import { h, icon, field, formError, showFormError, busy, errorMessage, put } from './ui.js';
 
 function brand(subtitle) {
   return h('div', { class: 'brand' },
@@ -79,7 +79,7 @@ export function renderAuth(root) {
   }
 
   setMode('login');
-  clear(root).append(
+  put(root, 
     h('main', { class: 'auth' },
       h('div', { class: 'auth-inner' },
         brand('Vår gemensamma vardag'),
@@ -109,7 +109,7 @@ export function renderHouseholdSetup(root, onDone) {
   const content = h('div');
 
   function showChoices() {
-    clear(content).append(
+    put(content, 
       h('p', { class: 'muted', style: 'margin-bottom:16px', text: 'Ni delar allt i ett hushåll. Den ena skapar det, den andra går med med en kod.' }),
       h('div', { class: 'choice-grid' },
         h('button', { type: 'button', class: 'choice', on: { click: showCreate } },
@@ -156,7 +156,7 @@ export function renderHouseholdSetup(root, onDone) {
         submit,
       ),
     );
-    clear(content).append(form);
+    put(content, form);
     input.focus();
   }
 
@@ -175,7 +175,7 @@ export function renderHouseholdSetup(root, onDone) {
   }
 
   showChoices();
-  clear(root).append(
+  put(root, 
     h('main', { class: 'auth' },
       h('div', { class: 'auth-inner' }, brand('Välkommen!'), content),
     ),
@@ -184,7 +184,7 @@ export function renderHouseholdSetup(root, onDone) {
 
 /** Visas om config.js inte är ifylld eller innehåller en hemlig nyckel. */
 export function renderConfigHelp(root, { secret }) {
-  clear(root).append(
+  put(root, 
     h('main', { class: 'auth' },
       h('div', { class: 'auth-inner' },
         brand('Nästan igång'),

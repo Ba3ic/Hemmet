@@ -2,7 +2,7 @@
 import { sb } from './supabase.js';
 import { state } from './state.js';
 import { getThemePref, setThemePref } from './theme.js';
-import { h, icon, iconButton, toast } from './ui.js';
+import { h, icon, iconButton, toast, add } from './ui.js';
 
 export const title = 'Inställningar';
 
@@ -39,7 +39,7 @@ export function mount(root, { navigate }) {
 
   const isStandalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 
-  root.append(
+  add(root,
     h('header', { class: 'topbar' },
       iconButton('back', 'Tillbaka till Idag', () => navigate('#idag')),
       h('div', { class: 'grow' }, h('h1', { text: 'Inställningar' })),

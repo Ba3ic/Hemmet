@@ -4,7 +4,7 @@ import { state } from './state.js';
 import { applyTheme } from './theme.js';
 import { renderAuth, renderHouseholdSetup, renderConfigHelp, loadHousehold } from './auth.js';
 import { startRealtime, stopRealtime, onChange } from './realtime.js';
-import { h, icon, clear, errorBox } from './ui.js';
+import { h, icon, errorBox, put, add } from './ui.js';
 
 const root = document.getElementById('app');
 
@@ -71,7 +71,7 @@ async function handleSession(session) {
     const cached = readCachedHousehold();
     if (cached && !navigator.onLine) state.household = cached;
     else {
-      clear(root).append(h('main', { class: 'auth' }, h('div', { class: 'auth-inner' }, errorBox(err, () => handleSession(session)))));
+      put(root, h('main', { class: 'auth' }, h('div', { class: 'auth-inner' }, errorBox(err, () => handleSession(session)))));
       return;
     }
   }
@@ -106,7 +106,7 @@ function buildShell() {
   );
   const offlineBar = h('div', { class: 'offline-bar', hidden: navigator.onLine, attrs: { role: 'status' } },
     'Du är offline – du ser senast hämtade data. Ändringar går inte att spara just nu.');
-  clear(root).append(offlineBar, main, nav);
+  put(root, offlineBar, main, nav);
   shell = { main, tabLinks, offlineBar };
 }
 
@@ -141,7 +141,7 @@ async function route() {
 
   current?.controller?.destroy?.();
   const container = h('main', { class: 'view', attrs: { tabindex: '-1' } });
-  clear(shell.main).append(container);
+  put(shell.main, container);
   const sameView = current?.name === name;
   current = { name, controller: null, container };
   if (!sameView) window.scrollTo(0, 0);

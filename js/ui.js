@@ -36,6 +36,17 @@ export function clear(el) {
   return el;
 }
 
+/** Lägg till barn (samma regler som h(): arrayer plattas ut, null/false hoppas över). */
+export function add(el, ...children) {
+  append(el, children);
+  return el;
+}
+
+/** Ersätt allt innehåll i el med children. */
+export function put(el, ...children) {
+  return add(clear(el), ...children);
+}
+
 // ---------- Länkar ----------
 
 /** Returnera en säker URL-sträng (bara http/https) eller null. */
