@@ -23,6 +23,7 @@ const SHELL = [
   'js/ui.js',
   'js/images.js',
   'js/events.js',
+  'js/weather.js',
   'js/idag.js',
   'js/kalender.js',
   'js/listor.js',

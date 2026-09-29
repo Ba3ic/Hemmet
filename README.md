@@ -24,6 +24,9 @@ js/listor.js            Flik: Listor
 js/anteckningar.js      Flik: Anteckningar
 js/utgifter.js          Flik: Utgifter
 js/installningar.js     Inställningar (kugghjulet på Idag)
+js/events.js            Händelser: hämtning och bladet för ny/redigera (Kalender + Idag)
+js/images.js            Bilder: förminskning, uppladdning, signerade URL:er
+js/weather.js           Väder från SMHI
 schema.sql              Databasschemat (redan kört i Supabase)
 ```
 
@@ -86,6 +89,17 @@ Service workern hämtar appens filer från nätet i första hand, så en ny vers
 ## Lägg på iPhones hemskärm
 
 Öppna adressen i **Safari**, tryck på **Dela** och välj **Lägg till på hemskärmen**. Hemmet öppnas då som en egen app utan adressfält.
+
+## Väder
+
+Idag-sidan hämtar prognosen för Bandhagen (lat 59.27, lon 18.05) direkt från SMHI:s öppna API
+[SNOW1gv1](https://opendata.smhi.se/metfcst/snow1gv1), som ersatte det äldre PMP3gv2 under 2025:
+
+```
+https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.05/lat/59.27/data.json
+```
+
+API:et skickar `Access-Control-Allow-Origin: *`, så det behövs ingen proxy eller Edge Function. Svaret cachas i minnet i 10 minuter, och service workern sparar det senaste svaret så att vädret syns även offline. Vill du byta ort ändrar du `LAT`, `LON` och `PLACE` i `js/weather.js`.
 
 ## Säkerhet
 

@@ -732,7 +732,7 @@ button.row:hover, a.row:hover { background: var(--raised); }
 
 .section-head {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin: 24px 4px 10px;
@@ -992,6 +992,151 @@ button.row:hover, a.row:hover { background: var(--raised); }
 .note-title::placeholder, .note-body::placeholder { color: var(--muted); opacity: 0.7; }
 .note-title:focus-visible, .note-body:focus-visible { outline: none; }
 .save-status { display: block; text-align: center; }
+
+/* ---------- Idag: väder ---------- */
+
+.weather {
+  padding: 18px 16px 12px;
+  background:
+    radial-gradient(120% 90% at 100% 0%, var(--accent-soft), transparent 60%),
+    var(--surface);
+}
+.weather-now {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+.weather-temp {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.weather-desc { display: grid; gap: 2px; min-width: 0; }
+.weather-desc strong { font-size: 1.02rem; }
+.weather-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0 12px;
+}
+.fact {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.fact > svg { width: 20px; height: 20px; color: var(--accent); flex: none; margin-top: 2px; }
+.fact .strong { font-weight: 650; }
+
+.hourly {
+  list-style: none;
+  margin: 0 -16px;
+  padding: 4px 16px 10px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%);
+}
+.hourly::-webkit-scrollbar { display: none; }
+.hourly li {
+  flex: none;
+  width: 58px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 0;
+  border-radius: 12px;
+  scroll-snap-align: start;
+}
+.hourly li:first-child { background: var(--raised); }
+.rain { color: var(--accent); font-size: 0.75rem; font-weight: 600; min-height: 1em; }
+
+.daily {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.daily li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px 60px 78px;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  border-bottom: 1px solid var(--line);
+}
+.daily li:last-child { border-bottom: 0; }
+.daily .day { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.daily .rain { text-align: right; }
+.daily .range { display: flex; justify-content: flex-end; gap: 6px; }
+.daily .sep { color: var(--line); }
+.weather-src { font-size: 0.72rem; text-align: right; margin-top: 8px; }
+.weather-error { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.weather-error > svg { width: 24px; height: 24px; color: var(--coral); flex: none; }
+
+.wicon { flex: none; overflow: visible; }
+.wicon * { stroke-linecap: round; stroke-linejoin: round; }
+.w-sun { fill: var(--coral-soft); stroke: var(--coral); stroke-width: 2.4; }
+.w-moon { fill: rgba(231, 238, 236, 0.12); stroke: var(--muted); stroke-width: 2.2; }
+.w-cloud { fill: var(--raised); stroke: var(--muted); stroke-width: 2.2; }
+.w-cloud.dark { fill: var(--line); }
+.w-rain { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+.w-snow { fill: var(--text); stroke: none; }
+.w-bolt { fill: none; stroke: var(--coral); stroke-width: 2.6; }
+.w-fog { fill: none; stroke: var(--muted); stroke-width: 2.4; }
+:root[data-theme="light"] .w-cloud { fill: #ffffff; }
+:root[data-theme="light"] .w-cloud.dark { fill: var(--raised); }
+:root[data-theme="light"] .w-moon { fill: var(--raised); }
+
+/* ---------- Idag: kommande ---------- */
+
+.upcoming .upcoming-day {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: start;
+}
+.upcoming-date {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  min-height: 56px;
+  padding: 8px 0;
+  text-decoration: none;
+  color: var(--text);
+  border-right: 1px solid var(--line);
+  align-self: stretch;
+}
+.upcoming-date:hover { background: var(--raised); }
+.upcoming-date .wd { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.upcoming-date .dn { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; line-height: 1.1; }
+.upcoming-events { list-style: none; margin: 0; padding: 0; }
+.upcoming-events li + li { border-top: 1px solid var(--line); }
+.upcoming-event {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.upcoming-event:hover { background: var(--raised); }
+.upcoming-event .event-time { min-width: 86px; font-size: 0.85rem; }
+.upcoming-event .title { font-weight: 600; overflow-wrap: anywhere; }
+.section-head .btn svg { width: 18px; height: 18px; }
 
 /* ---------- Rörelse ---------- */
 
