@@ -301,6 +301,14 @@ button, input, textarea, select { font: inherit; color: inherit; }
   appearance: none;
 }
 .textarea { min-height: 96px; resize: vertical; line-height: 1.45; }
+select.input {
+  padding-right: 40px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fa19c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+}
 .input::placeholder, .textarea::placeholder { color: var(--muted); opacity: 0.8; }
 .input:focus, .textarea:focus {
   border-color: var(--accent);
@@ -888,6 +896,102 @@ button.row:hover, a.row:hover { background: var(--raised); }
   position: absolute; top: calc(var(--safe-t) + 8px); right: 8px;
   color: #fff; background: rgba(255, 255, 255, 0.12);
 }
+
+/* ---------- Kalender ---------- */
+
+.cal { padding: 10px 10px 12px; }
+.cal .month-switch { margin: 0 0 6px; }
+.cal-weekdays, .cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal-weekdays span {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 4px 0 6px;
+}
+.cal-day {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  min-height: 46px;
+  padding: 4px 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.cal-day:hover { background: var(--raised); }
+.cal-day .n {
+  display: grid; place-items: center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  font-weight: 550;
+  font-size: 0.95rem;
+}
+.cal-day.other { color: var(--muted); opacity: 0.55; }
+.cal-day.today .n { color: var(--accent); font-weight: 750; box-shadow: inset 0 0 0 1.5px var(--accent); }
+.cal-day[aria-selected="true"] .n { background: var(--accent); color: var(--on-accent); box-shadow: none; font-weight: 700; }
+.cal-day .dots { display: flex; gap: 3px; height: 5px; }
+.cal-day .dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--coral); }
+.cal-day:focus-visible { outline-offset: -2px; }
+
+.event-row { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; }
+.event-row .grow { display: grid; gap: 2px; }
+.event-time {
+  flex: none;
+  min-width: 96px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  font-size: 0.9rem;
+  color: var(--accent);
+  padding-top: 1px;
+}
+.event-time.all-day { color: var(--coral); }
+.bell { color: var(--muted); padding: 2px 8px 0 0; }
+.bell svg { width: 18px; height: 18px; }
+
+/* ---------- Anteckningar ---------- */
+
+.search { position: relative; margin-bottom: 8px; }
+.search svg {
+  position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 20px; color: var(--muted); pointer-events: none;
+}
+.search-input { padding-left: 42px; }
+.search-input::-webkit-search-cancel-button { cursor: pointer; }
+.notes-list .row { min-height: 66px; }
+.notes-list .meta .when { color: var(--text); font-weight: 550; margin-right: 4px; }
+
+.note-editor { display: grid; gap: 4px; }
+.note-meta { text-align: center; margin-bottom: 6px; }
+.note-title, .note-body {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 4px 2px;
+  resize: none;
+}
+.note-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.note-body { font-size: 1.05rem; line-height: 1.55; min-height: 240px; overflow: hidden; }
+.note-title::placeholder, .note-body::placeholder { color: var(--muted); opacity: 0.7; }
+.note-title:focus-visible, .note-body:focus-visible { outline: none; }
+.save-status { display: block; text-align: center; }
 
 /* ---------- Rörelse ---------- */
 
