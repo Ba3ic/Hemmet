@@ -3,5 +3,5 @@
 // och datan skyddas av Row Level Security i databasen.
 // Lägg ALDRIG in service_role- eller sb_secret_-nycklar här.
 
-export const SUPABASE_URL = 'https://DITT-PROJEKT.supabase.co';
-export const SUPABASE_KEY = 'DIN-PUBLISHABLE-ELLER-ANON-NYCKEL';
+export const SUPABASE_URL = 'https://dxrjxksqwxvsersmwoim.supabase.co';
+export const SUPABASE_KEY = 'sb_publishable_PjfiDThTd4xTANula05Afg_yHyICWlJ';
