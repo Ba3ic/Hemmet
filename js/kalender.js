@@ -8,6 +8,26 @@ import { fetchEvents, occursOn, sortEvents, eventRow, eventSheet } from './event
 export const title = 'Kalender';
 
 const WEEKDAYS = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
+const MAX_LABELS = 3;        // etiketter per dag på bred skärm
+const MAX_LABELS_NARROW = 2; // på smal skärm (se .cal-ev:nth-child(3) i CSS)
+const EV_COLORS = 5;
+
+/** Stabil färg per händelse (samma händelse får alltid samma färg). */
+function colorIndex(e) {
+  let n = 0;
+  for (const ch of e.id || e.title) n = (n * 31 + ch.charCodeAt(0)) >>> 0;
+  return n % EV_COLORS;
+}
+
+/** Kort etikett i dagrutan: färgad kant, ev. starttid och titel. */
+function evLabel(e, day) {
+  const start = new Date(e.starts_at);
+  const showTime = !e.all_day && sameDay(start, day);
+  return h('span', { class: `cal-ev c${colorIndex(e)}` + (e.all_day ? ' all-day' : '') },
+    showTime ? h('span', { class: 't', text: fmt.time(start) }) : null,
+    h('span', { class: 'x', text: e.title }),
+  );
+}
 
 export function mount(root, { params }) {
   const fromParam = /^\d{4}-\d{2}-\d{2}$/.test(params[0] || '') ? new Date(params[0] + 'T00:00') : null;
@@ -28,6 +48,7 @@ export function mount(root, { params }) {
       h('button', { type: 'button', class: 'btn btn-ghost btn-sm', text: 'Idag', on: { click: () => select(new Date(), true) } }),
       iconButton('plus', 'Ny händelse', () => openNew(), 'accent'),
     ),
+    h('div', { class: 'cal-layout' },
     h('section', { class: 'card cal' },
       h('div', { class: 'month-switch' },
         iconButton('left', 'Föregående månad', () => shiftMonth(-1)),
@@ -37,9 +58,11 @@ export function mount(root, { params }) {
       h('div', { class: 'cal-weekdays', attrs: { 'aria-hidden': 'true' } }, WEEKDAYS.map((d) => h('span', { text: d }))),
       grid,
     ),
-    dayHead,
-    dayList,
+    h('aside', { class: 'cal-side', attrs: { 'aria-label': 'Vald dag' } }, dayHead, dayList),
+    ),
   );
+  // Kalendern får använda mer av bredden på stora skärmar.
+  root.classList.add('view-wide');
 
   // Rutnätet börjar på måndagen i veckan där månaden börjar och visar 6 veckor.
   const gridStart = () => addDays(month, -weekdayMon(month));
@@ -95,10 +118,13 @@ export function mount(root, { params }) {
     const cells = [];
     for (let i = 0; i < 42; i++) {
       const d = addDays(start, i);
-      const count = events.filter((e) => occursOn(e, d)).length;
+      const dayEvents = sortEvents(events.filter((e) => occursOn(e, d)));
+      const count = dayEvents.length;
       const inMonth = d.getMonth() === month.getMonth();
       const isSel = sameDay(d, selected);
-      const label = capitalize(fmt.full(d)) + (count ? `, ${count} ${count === 1 ? 'händelse' : 'händelser'}` : '');
+      const label = capitalize(fmt.full(d)) + (count
+        ? `, ${count} ${count === 1 ? 'händelse' : 'händelser'}: ${dayEvents.map((e) => e.title).join(', ')}`
+        : '');
       cells.push(h('button', {
         type: 'button',
         class: 'cal-day' + (inMonth ? '' : ' other') + (sameDay(d, today) ? ' today' : '') + (count ? ' has' : ''),
@@ -108,7 +134,12 @@ export function mount(root, { params }) {
         on: { click: () => select(d), keydown: onKey },
       },
         h('span', { class: 'n', text: String(d.getDate()) }),
-        h('span', { class: 'dots', attrs: { 'aria-hidden': 'true' } }, Array.from({ length: Math.min(count, 3) }, () => h('i'))),
+        count ? h('span', { class: 'cal-evs', attrs: { 'aria-hidden': 'true' } },
+          dayEvents.slice(0, MAX_LABELS).map((e) => evLabel(e, d)),
+          // Två varianter av "+N till": smal skärm visar färre etiketter (styrs i CSS).
+          count > MAX_LABELS ? h('span', { class: 'cal-more wide', text: `+${count - MAX_LABELS} till` }) : null,
+          count > MAX_LABELS_NARROW ? h('span', { class: 'cal-more narrow', text: `+${count - MAX_LABELS_NARROW}` }) : null,
+        ) : null,
       ));
     }
     put(grid, cells);
