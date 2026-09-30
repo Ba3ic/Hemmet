@@ -3,7 +3,8 @@
 // Gemensamt: fasta och rörliga utgifter (owner null), hushållets inkomst och vad som blir kvar.
 // Personlig flik: inkomst − andel av gemensamt − egna utgifter = kvar. Andelen räknas fram
 // från de gemensamma raderna (split_percent på members, 50 %) och sparas aldrig som egna rader,
-// så en ändring i Gemensamt syns direkt. Man läser båda personliga flikarna men ändrar bara sin egen.
+// så en ändring i Gemensamt syns direkt. Personliga flikar är privata: man ser bara sin egen
+// (databasen släpper bara igenom egna personliga rader, se migrations/003).
 //
 // Fasta utgifter har start_month och end_month ('YYYY-MM', null = tills vidare).
 // En ändring i månad M avslutar den gamla raden månaden innan och skapar en ny rad från M,
@@ -168,7 +169,7 @@ export function mount(root, { params }) {
     data.variable = vr.data;
     data.incomes = inc.data;
     sharedIncome = Object.fromEntries(hinc.data.map((r) => [r.month, Number(r.income) || 0]));
-    if (who !== SHARED && !memberOf(who)) who = SHARED;
+    if (who !== SHARED && who !== me) who = SHARED;
     loaded = true;
     render();
   }
@@ -226,7 +227,7 @@ export function mount(root, { params }) {
   }
 
   function renderSubnav() {
-    const items = [[SHARED, 'Gemensamt'], ...members.map((m) => [m.user_id, nameOf(m.user_id)])];
+    const items = [[SHARED, 'Gemensamt'], [me, nameOf(me)]];
     put(subnav, h('div', { class: 'segmented', attrs: { role: 'radiogroup', 'aria-label': 'Vems utgifter' } },
       items.map(([value, label]) => h('label', {},
         h('input', { type: 'radio', name: 'utgifter-who', value, checked: value === who, on: { change: () => setWho(value) } }),
@@ -257,7 +258,7 @@ export function mount(root, { params }) {
       memberOf(me).display_name = name;
       render();
     } } },
-      h('div', {}, h('strong', { text: 'Vad heter du?' }), h('p', { class: 'muted small', text: 'Namnet blir din flik här i Utgifter, för er båda.' })),
+      h('div', {}, h('strong', { text: 'Vad heter du?' }), h('p', { class: 'muted small', text: 'Namnet visas på din privata flik här i Utgifter.' })),
       h('div', { class: 'add-expense' }, input, h('button', { type: 'submit', class: 'btn btn-primary btn-sm', text: 'Spara' })),
     );
   }
@@ -399,7 +400,6 @@ export function mount(root, { params }) {
 
     put(content,
       hint,
-      mine ? null : h('p', { class: 'muted small view-note', text: `Du tittar på ${name}s flik. Bara ${name} kan ändra inkomst och egna utgifter här.` }),
       summary,
       cards.overview,
       incomeSection(owner, mine),

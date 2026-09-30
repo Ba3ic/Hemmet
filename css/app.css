@@ -881,7 +881,6 @@ button.row:hover, a.row:hover { background: var(--raised); }
 .mode-switch { display: flex; justify-content: center; margin: -2px 0 14px; }
 .mode-switch .segmented { min-width: 220px; }
 .segmented.compact span { min-height: 36px; font-size: 0.86rem; padding: 0 8px; white-space: nowrap; }
-.view-note { margin: -4px 4px 12px; }
 .name-hint { display: grid; gap: 10px; }
 .name-hint .add-expense { margin: 0; }
 

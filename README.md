@@ -63,6 +63,7 @@ Efter `schema.sql` kör du filerna i `migrations/` i nummerordning, en gång var
 | --- | --- |
 | `001_utgifter.sql` | Fasta utgifter får `start_month`/`end_month` så att de bara gäller framåt, och rörliga utgifter får `category` (`rorlig` eller `ovrigt`) för sektionen "Övrigt". |
 | `002_personligt_och_kategorier.sql` | Personliga flikar och kategorier: `members` får `display_name` och `split_percent` (50), ny tabell `categories` (Mat, Utemat, Boende, Transport, Nöje, Övrigt), `owner` och `category_id` på utgifterna, ny tabell `incomes` för personlig inkomst och nya RLS-regler. Befintliga utgifter blir gemensamma med kategorin Övrigt, eller den kategori de heter exakt som (t.ex. "Mat"). Sektionen "Övrigt" ersätts av kategorin Övrigt. |
+| `003_privata_flikar.sql` | Personliga flikar blir privata: egna utgifter, inkomster och egna kategorier kan bara läsas av ägaren. |
 
 Saknas en migrering visar Utgifter-fliken ett felmeddelande som säger att den behöver köras.
 
@@ -110,10 +111,10 @@ Service workern hämtar appens filer från nätet i första hand, så en ny vers
 
 ## Utgifter
 
-Överst finns flikarna **Gemensamt** och en per person. Namnet på fliken sätts under Inställningar (eller i rutan som visas i Utgifter tills namnet är ifyllt).
+Överst finns flikarna **Gemensamt** och din egen personliga flik. Namnet på fliken sätts under Inställningar (eller i rutan som visas i Utgifter tills namnet är ifyllt).
 
 - **Gemensamt**: fasta och rörliga utgifter som ni delar, hushållets inkomst och vad som blir kvar.
-- **Personlig flik**: inkomst − andel av gemensamt − egna utgifter = kvar. Andelen (50 %) räknas fram från Gemensamt varje gång och sparas aldrig som egna rader, så ändringar i Gemensamt syns direkt. Båda kan läsa varandras flikar, men bara ägaren kan ändra sin inkomst och sina egna utgifter (det skyddas av RLS i databasen).
+- **Personlig flik**: inkomst − andel av gemensamt − egna utgifter = kvar. Andelen (50 %) räknas fram från Gemensamt varje gång och sparas aldrig som egna rader, så ändringar i Gemensamt syns direkt. Fliken är privat: bara du ser din inkomst, dina egna utgifter och dina egna kategorier (det skyddas av RLS i databasen, inte bara i appen).
 - **Inkomst**: en återkommande lön följer med varje månad. Ändrar du beloppet väljer du om det gäller bara den månaden eller från och med den.
 - **Kategorier**: varje utgift har en kategori. Tryck på kategorin på en rad för att byta, eller på **Kategorier** uppe till höger för att skapa, döpa om eller ta bort. Tas en kategori bort flyttas dess utgifter till Övrigt.
 - **Trender**: rörliga utgifter per kategori de senaste 6 eller 12 månaderna, med filter, sortering efter belopp eller förändring och förändring mot föregående månad. I de personliga flikarna finns också "Kvar per månad".

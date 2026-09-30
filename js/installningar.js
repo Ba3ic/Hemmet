@@ -65,7 +65,7 @@ export function mount(root, { navigate }) {
 
     h('section', { class: 'card', attrs: { 'aria-labelledby': 'name-title' } },
       h('div', { class: 'card-title' }, h('h2', { id: 'name-title' }, h('label', { text: 'Ditt namn', attrs: { for: 'my-name' } }))),
-      h('p', { class: 'muted small', style: 'margin-bottom:10px', text: 'Visas som din flik under Utgifter, för er båda.' }),
+      h('p', { class: 'muted small', style: 'margin-bottom:10px', text: 'Visas på din privata flik under Utgifter.' }),
       nameForm,
     ),
 
