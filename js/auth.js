@@ -95,7 +95,7 @@ export function renderAuth(root) {
 export async function loadHousehold() {
   const { data, error } = await sb
     .from('members')
-    .select('household_id, households(id, name, invite_code)')
+    .select('household_id, households(id, name, invite_code, created_by)')
     .eq('user_id', state.user.id)
     .limit(1);
   if (error) throw error;

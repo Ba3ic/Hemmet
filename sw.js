@@ -3,7 +3,7 @@
 // från nätet i första hand och från cachen när nätet saknas (läsa offline).
 // Höj VERSION när du lägger till eller tar bort filer i SHELL.
 
-const VERSION = 'v3';
+const VERSION = 'v4';
 const SHELL_CACHE = `hemmet-shell-${VERSION}`;
 const CDN_CACHE = 'hemmet-cdn';
 const DATA_CACHE = 'hemmet-data';
@@ -31,6 +31,9 @@ const SHELL = [
   'js/anteckningar.js',
   'js/utgifter.js',
   'js/utgifter-graf.js',
+  'js/utgifter-berakning.js',
+  'js/utgifter-kategorier.js',
+  'js/utgifter-trender.js',
   'js/installningar.js',
   'icons/icon-192.png',
   'icons/icon-512.png',

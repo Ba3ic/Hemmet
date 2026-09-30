@@ -1,8 +1,8 @@
-// Inställningar: inbjudningskod, tema och utloggning.
+// Inställningar: inbjudningskod, ditt namn, tema och utloggning.
 import { sb } from './supabase.js';
 import { state } from './state.js';
 import { getThemePref, setThemePref } from './theme.js';
-import { h, icon, iconButton, toast, add } from './ui.js';
+import { h, icon, iconButton, toast, toastError, add } from './ui.js';
 
 export const title = 'Inställningar';
 
@@ -28,6 +28,18 @@ export function mount(root, { navigate }) {
 
   const codeEl = h('code', { text: hh.invite_code });
 
+  // Namnet visas som din flik under Utgifter.
+  const nameInput = h('input', { class: 'input', id: 'my-name', placeholder: 'T.ex. Lucas', attrs: { maxlength: '30', autocomplete: 'given-name' } });
+  sb.from('members').select('display_name').eq('household_id', hh.id).eq('user_id', state.user.id).maybeSingle()
+    .then(({ data }) => { if (data?.display_name && !nameInput.value) nameInput.value = data.display_name; });
+  const nameForm = h('form', { class: 'add-expense', on: { submit: async (e) => {
+    e.preventDefault();
+    const { error } = await sb.rpc('set_my_profile', { p_household: hh.id, p_name: nameInput.value.trim() });
+    if (error) return toastError(error);
+    nameInput.blur();
+    toast('Namnet är sparat');
+  } } }, nameInput, h('button', { type: 'submit', class: 'btn btn-sm', text: 'Spara' }));
+
   const current = getThemePref();
   const themes = [['dark', 'Mörk'], ['light', 'Ljus'], ['angelica', 'Angelica Mode'], ['system', 'Följ systemet']];
   const themeControl = h('div', { class: 'segmented themes', attrs: { role: 'radiogroup', 'aria-label': 'Tema' } },
@@ -49,6 +61,12 @@ export function mount(root, { navigate }) {
       h('div', { class: 'card-title' }, h('h2', { id: 'hh-title', text: hh.name })),
       h('p', { class: 'muted small', style: 'margin-bottom:10px', text: 'Dela koden med din sambo. Hen skapar ett konto, väljer "Gå med med kod" och skriver in den.' }),
       h('div', { class: 'invite' }, codeEl, copyBtn),
+    ),
+
+    h('section', { class: 'card', attrs: { 'aria-labelledby': 'name-title' } },
+      h('div', { class: 'card-title' }, h('h2', { id: 'name-title' }, h('label', { text: 'Ditt namn', attrs: { for: 'my-name' } }))),
+      h('p', { class: 'muted small', style: 'margin-bottom:10px', text: 'Visas som din flik under Utgifter, för er båda.' }),
+      nameForm,
     ),
 
     h('section', { class: 'card', attrs: { 'aria-labelledby': 'theme-title' } },

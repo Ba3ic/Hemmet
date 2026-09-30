@@ -2,7 +2,7 @@
 // Ändringar skickas vidare till lyssnare som laddar om sin vy.
 import { sb } from './supabase.js';
 
-const TABLES = ['events', 'lists', 'list_items', 'notes', 'fixed_expenses', 'variable_expenses', 'month_income'];
+const TABLES = ['events', 'lists', 'list_items', 'notes', 'fixed_expenses', 'variable_expenses', 'month_income', 'categories', 'incomes', 'members'];
 const listeners = new Set();
 let channel = null;
 

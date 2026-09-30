@@ -103,6 +103,7 @@ const P = {
   offline: '<path d="M3 3l18 18M8.5 16.5a5 5 0 0 1 7 0M5 12.8a10 10 0 0 1 4.4-2.4M19 12.8a10 10 0 0 0-2.1-1.5M2 9a15 15 0 0 1 4.2-2.6M22 9a15 15 0 0 0-11.1-3.9M12 20h.01"/>',
   drop: '<path d="M12 3.5s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/>',
   wind: '<path d="M3 9h11a3 3 0 1 0-3-3M3 15h15a3 3 0 1 1-3 3M3 12h7"/>',
+  tag: '<path d="M3.5 12.1V5a1.5 1.5 0 0 1 1.5-1.5h7.1a1.5 1.5 0 0 1 1 .4l7.4 7.4a1.5 1.5 0 0 1 0 2.1l-7.1 7.1a1.5 1.5 0 0 1-2.1 0l-7.4-7.4a1.5 1.5 0 0 1-.4-1z"/><circle cx="8.3" cy="8.3" r="1.4"/>',
   cart: '<circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/><path d="M3 4h2.2l2.3 11h10.8l2-7.5H6.2"/>',
 };
 
@@ -212,6 +213,7 @@ export function errorMessage(err) {
   if (/ogiltig kod/i.test(msg)) return 'Koden hittades inte. Kontrollera att du skrivit alla 8 tecken rätt.';
   if (/inte inloggad|jwt|not authenticated/i.test(msg)) return 'Du är utloggad. Logga in igen och försök på nytt.';
   if (code === '42703' || /column .* does not exist/i.test(msg)) return 'Databasen saknar nya kolumner. Kör migreringen i mappen migrations/ i Supabase (SQL Editor) och ladda om sidan.';
+  if (code === '42P01' || code === 'PGRST205' || /relation .* does not exist|could not find the table|could not find the function/i.test(msg)) return 'Databasen saknar nya tabeller. Kör de nya filerna i mappen migrations/ i Supabase (SQL Editor) och ladda om sidan.';
   if (/row-level security|permission denied/i.test(msg) || code === '42501') return 'Du har inte behörighet att göra det här. Kontrollera att du är med i hushållet.';
   if (/payload too large|exceeded the maximum/i.test(msg)) return 'Filen är för stor. Välj en mindre bild.';
   return msg ? `Något gick fel: ${msg}` : 'Något gick fel. Försök igen.';
